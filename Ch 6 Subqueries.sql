@@ -1,7 +1,7 @@
 -- A: Find which county had the most months with unemployment rates above the state average:
 -- i:   Write a query to calculate the state average unemployment rate.
-select AVG(value) 
-from unemployment
+select AVG(value)
+from unemployment;
 -- ii:  Use this query in the WHERE clause of an outer query to filter for months above the average.
 select period_name, count(period_name) as months_over_avg
 from unemployment
@@ -28,7 +28,7 @@ group by company
 
 -- ii:  Use this query in the FROM clause of an outer query, alias it, and join it with the original table.
 -- 			Use Select * in the outer query to make sure your join worked properly
-select *
+select distinct company, largest_investment
 from (select company, max(capital_investment)
 		from ecd
 		group by company) as largest_investment
@@ -43,7 +43,19 @@ from (select county, round(avg(new_jobs),2) as avg_jobs
 		group by county) as avg_job_county
 join ecd
 using(county)
-order by avg_jobs desc;
+order by county;
+
+-------------- CORRECT ONE BELOW
+SELECT 
+	county,
+	ROUND(AVG(new_jobs),2) AS total_jobs
+FROM (SELECT 
+		company,
+		MAX(capital_investment) AS company_max_invest
+		FROM ecd
+		GROUP BY company) AS max_cap_inv
+INNER JOIN ecd ON (max_cap_inv.company = ecd.company) AND (max_cap_inv.company_max_invest = ecd.capital_investment)
+GROUP BY county;
 
 
 
